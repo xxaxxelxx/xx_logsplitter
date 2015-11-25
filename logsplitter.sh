@@ -15,7 +15,7 @@ while true; do
 	test -r "$RAWFILE" || continue
 	RAWFILEBASE=$(basename "$RAWFILE")
 	for CUSTOMER in $@; do
-	    zless $RAWFILE | grep -v '127.0.0.1' | grep -v ' 0$' | grep $CUSTOMER | sed 's|intro.||' | gzip >> $SPLITBASEDIR/$CUSTOMER/access.$(date "+%Y-%m-%d").log
+	    zless $RAWFILE | grep -v '127.0.0.1' | grep -v ' 0$' | grep $CUSTOMER | sed 's|intro.||' | gzip >> $SPLITBASEDIR/$CUSTOMER/access.$(date "+%Y-%m-%d").log.gz
 	done
 	mv -f $RAWFILE ${RAWFILE%*\.unprocessed}
     done
