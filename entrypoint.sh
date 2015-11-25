@@ -3,6 +3,6 @@
 set -e
 #set -x
 
-./logsplitter.sh
+./logsplitter.sh $@
 
 exit

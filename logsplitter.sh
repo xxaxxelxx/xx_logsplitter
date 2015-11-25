@@ -4,7 +4,6 @@ SPLITBASEDIR="/customer"
 if [ "x$DEPOTDIR" == "x" ]; then exit; fi
 SLEEP=60
 
-test -d $DEPOTDIR/md5 || mkdir -p $DEPOTDIR/md5
 test -d $SPLITBASEDIR || mkdir -p $SPLITBASEDIR
 
 for CUSTOMER in $@; do
@@ -16,9 +15,9 @@ while true; do
 	test -r "$RAWFILE" || continue
 	RAWFILEBASE=$(basename "$RAWFILE")
 	for CUSTOMER in $@; do
-	    zless RAWFILE | grep -v '127.0.0.1' | grep -v ' 0$' | grep $CUSTOMER | sed 's|intro.||'  
+	    zless $RAWFILE | grep -v '127.0.0.1' | grep -v ' 0$' | grep $CUSTOMER | sed 's|intro.||' | gzip >> $SPLITBASEDIR/$CUSTOMER/access.$(date "+%Y-%m-%d").log
 	done
-	
+	mv -f $RAWFILE ${RAWFILE%*\.unprocessed}
     done
 sleep $SLEEP
 done

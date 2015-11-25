@@ -14,6 +14,7 @@ RUN apt-get -qq -y install sudo
 RUN apt-get -qq -y install mc 
 RUN apt-get clean
 
+VOLUME /customer
 
 COPY ./*.sh /
 
