@@ -22,6 +22,8 @@ while true; do
 	test -r "$RAWFILE" || continue
 	RAWFILEBASE=$(basename "$RAWFILE")
 	for CUSTOMER in $@; do
+	    test -r $(date +%Y_%m).bytesum || echo 0 > $(date +%Y_%m).bytesum
+	    echo "$(cat $RAWFILE | awk '{sum+=$10} END {print sum}') + $(cat $(date +%Y_%m).bytesum)" | bc > $(date +%Y_%m).bytesum 
 	    zless $RAWFILE | grep -v '127.0.0.1' | grep -v ' 0$'| grep -v 'listclients' | grep $CUSTOMER | sed 's|intro.||' | gzip >> $SPLITBASEDIR/$CUSTOMER/logs/access.$(date "+%Y-%m-%d").log.gz
 	done
 	mv -f $RAWFILE ${RAWFILE%*\.unprocessed}
