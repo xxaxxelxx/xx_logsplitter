@@ -23,7 +23,7 @@ while true; do
 	RAWFILEBASE=$(basename "$RAWFILE")
 	for CUSTOMER in $@; do
 	    test -r $SPLITBASEDIR/$CUSTOMER/logs/$(date +%Y_%m).bytesum || echo 0 > $SPLITBASEDIR/$CUSTOMER/logs/$(date +%Y_%m).bytesum
-	    echo "$(zless $RAWFILE | grep -v '127.0.0.1' | grep -v ' 0$'| grep -v 'listclients' | grep $CUSTOMER | sed 's|intro.||' | awk '{print $10}' | paste -sd+ - | bc ) + $(cat $SPLITBASEDIR/$CUSTOMER/logs/$(date +%Y_%m).bytesum)" | bc > $SPLITBASEDIR/$CUSTOMER/logs/$(date +%Y_%m).bytesum.tmp
+	    echo "$(zless $RAWFILE | grep -v '127.0.0.1' | grep -v ' 0$'| grep -v 'listclients' | grep $CUSTOMER | sed 's|intro.||' | awk '{sum+=$10} END {print sum}') + $(cat $SPLITBASEDIR/$CUSTOMER/logs/$(date +%Y_%m).bytesum)" | bc > $SPLITBASEDIR/$CUSTOMER/logs/$(date +%Y_%m).bytesum.tmp
 	    mv -f $SPLITBASEDIR/$CUSTOMER/logs/$(date +%Y_%m).bytesum.tmp $SPLITBASEDIR/$CUSTOMER/logs/$(date +%Y_%m).bytesum
 	    zless $RAWFILE | grep -v '127.0.0.1' | grep -v ' 0$'| grep -v 'listclients' | grep $CUSTOMER | sed 's|intro.||' | gzip >> $SPLITBASEDIR/$CUSTOMER/logs/access.$(date "+%Y-%m-%d").log.gz
 	done
