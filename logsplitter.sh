@@ -24,7 +24,7 @@ while true; do
 	for CUSTOMER in $@; do
 	    test -r $SPLITBASEDIR/$CUSTOMER/logs/$(date +%Y_%m).bytesum
 	    if [ $? -eq 0 ]; then
-		cat $SPLITBASEDIR/$CUSTOMER/logs/$(date +%Y_%m).bytesum) | grep '[[:digit:]]' > /dev/null || echo "0" > $SPLITBASEDIR/$CUSTOMER/logs/$(date +%Y_%m).bytesum
+		cat $SPLITBASEDIR/$CUSTOMER/logs/$(date +%Y_%m).bytesum | grep '[[:digit:]]' > /dev/null || echo "0" > $SPLITBASEDIR/$CUSTOMER/logs/$(date +%Y_%m).bytesum
 	    else
 		echo "0" > $SPLITBASEDIR/$CUSTOMER/logs/$(date +%Y_%m).bytesum
 	    fi
