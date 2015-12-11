@@ -9,6 +9,9 @@ SLEEP=60
 
 test -d $SPLITBASEDIR || mkdir -p $SPLITBASEDIR
 
+    LINKED_CONTAINER=$(env | grep '_ENV_' | head -n 1 | awk '{print $1}' | sed 's/_ENV_.*//')
+    IC_HOST=$(cat /etc/hosts | grep -iw ${LINKED_CONTAINER} | awk '{print $1}')
+
 for CUSTOMER in $@; do
     test -d $SPLITBASEDIR/$CUSTOMER/logs || mkdir -p $SPLITBASEDIR/$CUSTOMER/logs
 done
@@ -28,13 +31,13 @@ while true; do
 	    else
 		echo "0" > $SPLITBASEDIR/$CUSTOMER/logs/$(date +%Y_%m).bytesum
 	    fi
-	    FRESHGRABBED=$(zless $RAWFILE | grep -v '127.0.0.1' | grep -v '^172.' | grep -v ' 0$'| grep -v 'listclients' | grep $CUSTOMER | sed 's|intro.||' | awk '{print $10}' | paste -sd+ - | bc )
+	    FRESHGRABBED=$(zless $RAWFILE | grep -v '^127\.' | grep -v '^172\.' | grep -v ' 0$'| grep -v 'listclients' | grep $CUSTOMER | sed 's|intro.||' | awk '{print $10}' | paste -sd+ - | bc )
 	    echo "$FRESHGRABBED" | grep '[[:digit:]]' > /dev/null 
 	    if [ $? -eq 0 ]; then
 		echo "$FRESHGRABBED + $(cat $SPLITBASEDIR/$CUSTOMER/logs/$(date +%Y_%m).bytesum)" | bc > $SPLITBASEDIR/$CUSTOMER/logs/$(date +%Y_%m).bytesum.tmp
 		mv -f $SPLITBASEDIR/$CUSTOMER/logs/$(date +%Y_%m).bytesum.tmp $SPLITBASEDIR/$CUSTOMER/logs/$(date +%Y_%m).bytesum
 	    fi
-	    zless $RAWFILE | grep -v '127.0.0.1' | grep -v '^172.' | grep -v ' 0$'| grep -v 'listclients' | grep $CUSTOMER | sed 's|intro.||' | gzip >> $SPLITBASEDIR/$CUSTOMER/logs/access.$(date "+%Y-%m-%d").log.gz
+	    zless $RAWFILE | grep -v '^127\.' | grep -v '^172\.' | grep -v ' 0$'| grep -v 'listclients' | grep $CUSTOMER | sed 's|intro.||' | gzip >> $SPLITBASEDIR/$CUSTOMER/logs/access.$(date "+%Y-%m-%d").log.gz
 	done
 	mv -f $RAWFILE ${RAWFILE%*\.unprocessed}
     done
