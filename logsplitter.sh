@@ -4,7 +4,7 @@ SPLITBASEDIR="/customer"
 if [ "x$DEPOTDIR" == "x" ]; then exit; fi
 
 MAXAGE=366
-
+MAXDAYS=7
 SLEEP=60
 
 test -d $SPLITBASEDIR || mkdir -p $SPLITBASEDIR
@@ -37,7 +37,15 @@ while true; do
 		echo "$FRESHGRABBED + $(cat $SPLITBASEDIR/$CUSTOMER/logs/$(date +%Y_%m).bytesum)" | bc > $SPLITBASEDIR/$CUSTOMER/logs/$(date +%Y_%m).bytesum.tmp
 		mv -f $SPLITBASEDIR/$CUSTOMER/logs/$(date +%Y_%m).bytesum.tmp $SPLITBASEDIR/$CUSTOMER/logs/$(date +%Y_%m).bytesum
 	    fi
-	    zless $RAWFILE | grep -v '^127\.' | grep -v '^172\.' | grep -v ' 0$'| grep -v 'listclients' | grep $CUSTOMER | sed 's|intro.||' | gzip >> $SPLITBASEDIR/$CUSTOMER/logs/access.$(date "+%Y-%m-%d").log.gz
+
+	    TOFFSET=0;DAY=0
+	    while [ $DAY -le $MAXDAYS ]; do
+		NOWSEC=$(date +%s)
+		APACHEDATESTRING="$(date -d @$(($NOWSEC - $TOFFSET)) +%d/%b/%Y)";LOGNAMEDATESTRING="$(date -d @$(($NOWSEC - $TOFFSET)) +%Y-%m-%d)"
+		zless $RAWFILE | grep -v '^127\.' | grep -v '^172\.' | grep -v ' 0$'| grep -v 'listclients' | grep $CUSTOMER | grep "$APACHEDATESTRING" | sed 's|intro.||' | gzip >> $SPLITBASEDIR/$CUSTOMER/logs/access.$LOGNAMEDATESTRING.log.gz
+		TOFFSET=$(($TOFFSET - 86400))
+		DAY=$(($DAY + 1))
+	    done
 	done
 	mv -f $RAWFILE ${RAWFILE%*\.unprocessed}
     done
