@@ -5,12 +5,9 @@ if [ "x$DEPOTDIR" == "x" ]; then exit; fi
 
 MAXAGE=366
 MAXDAYS=7
-SLEEP=600
+SLEEP=60
 
 test -d $SPLITBASEDIR || mkdir -p $SPLITBASEDIR
-
-    LINKED_CONTAINER=$(env | grep '_ENV_' | head -n 1 | awk '{print $1}' | sed 's/_ENV_.*//')
-    IC_HOST=$(cat /etc/hosts | grep -iw ${LINKED_CONTAINER} | awk '{print $1}')
 
 for CUSTOMER in $@; do
     test -d $SPLITBASEDIR/$CUSTOMER/logs || mkdir -p $SPLITBASEDIR/$CUSTOMER/logs
@@ -55,6 +52,7 @@ while true; do
 		NOWSEC=$(date +%s)
 		APACHEDATESTRING="$(date -d @$(($NOWSEC - $TOFFSET)) +%d/%b/%Y)";LOGNAMEDATESTRING="$(date -d @$(($NOWSEC - $TOFFSET)) +%Y-%m-%d)"
 		zless $RAWFILE | grep -v '^127\.' | grep -v '^172\.' | grep -v ' 0$'| grep -v 'listclients' | grep $CUSTOMER | grep "$APACHEDATESTRING" | sed 's|intro.||' | gzip >> $SPLITBASEDIR/$CUSTOMER/logs/access.$LOGNAMEDATESTRING.log.gz
+		zless $SPLITBASEDIR/$CUSTOMER/logs/access.$LOGNAMEDATESTRING.log.gz > /dev/null || rm -f $SPLITBASEDIR/$CUSTOMER/logs/access.$LOGNAMEDATESTRING.log.gz
 		TOFFSET=$(($TOFFSET + 86400))
 		DAY=$(($DAY + 1))
 	    done
