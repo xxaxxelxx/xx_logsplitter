@@ -5,7 +5,7 @@ if [ "x$DEPOTDIR" == "x" ]; then exit; fi
 
 MAXAGE=366
 MAXDAYS=7
-SLEEP=600
+SLEEP=60
 
 test -d $SPLITBASEDIR || mkdir -p $SPLITBASEDIR
 
