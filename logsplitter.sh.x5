@@ -23,14 +23,14 @@ while true; do
 	RAWFILEBASE=$(basename "$RAWFILE")
 	for CUSTOMER in $@; do
 
-	    TOFFSET=0; OLDTSTAMP=""
+	    TOFFSET=0
 	    while [ $TOFFSET -lt 86401 ]; do
 		NOWSEC=$(date +%s)
-#		if [ $TOFFSET -gt 0 ]; then
-#		    OLDTSTAMP=$TSTAMP
-#		fi
+		if [ $TOFFSET -gt 0 ]; then
+		    OLDTSTAMP=$TSTAMP
+		fi
 		TSTAMP="$(date -d @$(($NOWSEC - $TOFFSET)) +%Y_%m)"; APACHETSTAMP="$(date -d @$(($NOWSEC - $TOFFSET)) +%b/%Y)" 
-#		if [  "x$TSTAMP" == "x$OLDTSTAMP" ]; then break; fi
+		if [  "x$TSTAMP" == "x$OLDTSTAMP" ]; then break; fi
 
 		test -r $SPLITBASEDIR/$CUSTOMER/logs/$TSTAMP.bytesum
 		if [ $? -eq 0 ]; then
