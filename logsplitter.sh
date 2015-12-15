@@ -23,7 +23,7 @@ while true; do
 	RAWFILEBASE=$(basename "$RAWFILE")
 	for CUSTOMER in $@; do
 
-	    TOFFSET=0; OLDTSTAMP=""
+	    TOFFSET=0
 	    while [ $TOFFSET -lt 86401 ]; do
 		NOWSEC=$(date +%s)
 #		if [ $TOFFSET -gt 0 ]; then
