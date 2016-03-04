@@ -51,8 +51,7 @@ while true; do
 	    while [ $DAY -le $MAXDAYS ]; do
 		NOWSEC=$(date +%s)
 		APACHEDATESTRING="$(date -d @$(($NOWSEC - $TOFFSET)) +%d/%b/%Y)";LOGNAMEDATESTRING="$(date -d @$(($NOWSEC - $TOFFSET)) +%Y-%m-%d)"
-		zless $RAWFILE | grep -v '^127\.' | grep -v '^172\.' | grep -v ' 0$'| grep -v 'listclients' | grep $CUSTOMER | grep "$APACHEDATESTRING" | grep 'intro\.' | sed 's|intro.||' | gzip >> $SPLITBASEDIR/$CUSTOMER/logs/access.$LOGNAMEDATESTRING.intro.log.gz
-		zless $SPLITBASEDIR/$CUSTOMER/logs/access.$LOGNAMEDATESTRING.intro.log.gz > /dev/null || rm -f $SPLITBASEDIR/$CUSTOMER/logs/access.$LOGNAMEDATESTRING.intro.log.gz
+		zless $RAWFILE | grep -v '^127\.' | grep -v '^172\.' | grep -v ' 0$' | grep -v ' 1$' | grep -v 'listclients' | grep $CUSTOMER | grep "$APACHEDATESTRING" | grep 'intro\.' | sed 's|intro.||' >> $DEPOTDIR/intro.$CUSTOMER.$(date "+%s")
 		zless $RAWFILE | grep -v '^127\.' | grep -v '^172\.' | grep -v ' 0$'| grep -v 'listclients' | grep $CUSTOMER | grep "$APACHEDATESTRING" | sed 's|intro.||' | gzip >> $SPLITBASEDIR/$CUSTOMER/logs/access.$LOGNAMEDATESTRING.log.gz
 		zless $SPLITBASEDIR/$CUSTOMER/logs/access.$LOGNAMEDATESTRING.log.gz > /dev/null || rm -f $SPLITBASEDIR/$CUSTOMER/logs/access.$LOGNAMEDATESTRING.log.gz
 		TOFFSET=$(($TOFFSET + 86400))
