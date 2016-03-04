@@ -54,7 +54,7 @@ while true; do
 		APACHEDATESTRING="$(date -d @$(($NOWSEC - $TOFFSET)) +%d/%b/%Y)";LOGNAMEDATESTRING="$(date -d @$(($NOWSEC - $TOFFSET)) +%Y-%m-%d)"
 
 		zless $RAWFILE | grep -v '^127\.' | grep -v '^172\.' | grep -v ' 0$' | grep -v ' 1$' | grep -v 'listclients' | grep $CUSTOMER | grep "$APACHEDATESTRING" | grep 'intro\.' | sed 's|intro.||' >> $DEPOTDIR/introlog.$CUSTOMER.$INTRO_TSTAMP
-
+		cat $DEPOTDIR/introlog.$CUSTOMER.$INTRO_TSTAMP | wc -l | grep -w '^0$' > /dev/null && rm -f $DEPOTDIR/introlog.$CUSTOMER.$INTRO_TSTAMP
 		zless $RAWFILE | grep -v '^127\.' | grep -v '^172\.' | grep -v ' 0$'| grep -v 'listclients' | grep $CUSTOMER | grep "$APACHEDATESTRING" | sed 's|intro.||' | gzip >> $SPLITBASEDIR/$CUSTOMER/logs/access.$LOGNAMEDATESTRING.log.gz
 		zless $SPLITBASEDIR/$CUSTOMER/logs/access.$LOGNAMEDATESTRING.log.gz > /dev/null || rm -f $SPLITBASEDIR/$CUSTOMER/logs/access.$LOGNAMEDATESTRING.log.gz
 		TOFFSET=$(($TOFFSET + 86400))
@@ -63,6 +63,7 @@ while true; do
 	done
 	mv -f $RAWFILE ${RAWFILE%*\.unprocessed}
     done
-sleep $SLEEP
+
+    sleep $SLEEP
 done
 exit
